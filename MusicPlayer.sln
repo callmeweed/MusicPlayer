@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicPlayer", "MusicPlayer.csproj", "{3B3DD720-14CD-4A4F-AB8C-F87957CE42E4}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "MusicPlayerByWeed0.1", "..\Setup\MusicPlayerByWeed0.1\MusicPlayerByWeed0.1.vdproj", "{C8F47D21-9A67-4572-9D6D-B6DAA02192BD}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupMusicPlayer", "..\SetupMusicPlayer\SetupMusicPlayer.vdproj", "{B2C66081-F5AB-482E-A1D1-CA87E319631A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,8 +17,8 @@ Global
 		{3B3DD720-14CD-4A4F-AB8C-F87957CE42E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B3DD720-14CD-4A4F-AB8C-F87957CE42E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B3DD720-14CD-4A4F-AB8C-F87957CE42E4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C8F47D21-9A67-4572-9D6D-B6DAA02192BD}.Debug|Any CPU.ActiveCfg = Debug
-		{C8F47D21-9A67-4572-9D6D-B6DAA02192BD}.Release|Any CPU.ActiveCfg = Release
+		{B2C66081-F5AB-482E-A1D1-CA87E319631A}.Debug|Any CPU.ActiveCfg = Debug
+		{B2C66081-F5AB-482E-A1D1-CA87E319631A}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

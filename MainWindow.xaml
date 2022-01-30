@@ -125,15 +125,15 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid Margin="0,0,897,0" Background="#FFEFF0F4">
-            <Image Height="100" Width="100" Source="/Icon/icons8-spider-man-new-128.png" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,50,0,0"/>
-            <TextBlock Height="47" TextWrapping="Wrap" Text="Spider-Man" Width="132" FontSize="25" FontFamily="Bradley Hand ITC" FontWeight="Bold" Margin="84,155,84,482"/>
-            <TextBlock Height="30" TextWrapping="Wrap" Text="Premium" Width="100" Background="#FFB422DF" Foreground="White" FontFamily="Arial" FontWeight="Bold" Padding="23,7,0,0" Margin="100,191,100,463"/>
-            <Button x:Name="btnPlaying" Content="    Now playing" Width="120" Height="48" FontSize="15" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Background="#FFEFF0F4" BorderBrush="{x:Null}" Style="{DynamicResource ButtonStyle1}" HorizontalContentAlignment="Left" Margin="90,278,90,374" Click="btnPlaying_Click"/>
-            <Button x:Name="btnExplore" Content="    Explore" Width="120" Height="48" FontSize="15" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Background="#FFEFF0F4" BorderBrush="{x:Null}" Style="{DynamicResource ButtonStyle1}" HorizontalContentAlignment="Left" Margin="90,331,90,321" Click="btnExplore_Click"/>
-            <Button x:Name="btnAlbums" Content="    Albums" Width="120" Height="48" FontSize="15" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Background="#FFEFF0F4" BorderBrush="{x:Null}" Style="{DynamicResource ButtonStyle1}" HorizontalContentAlignment="Left" Margin="90,384,90,268" Click="btnAlbums_Click"/>
-            <Button x:Name="btnPlaylists" Content="    Playlists" Width="120" Height="48" FontSize="15" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Background="#FFEFF0F4" BorderBrush="{x:Null}" Style="{DynamicResource ButtonStyle1}" HorizontalContentAlignment="Left" Margin="90,437,90,215" Click="btnPlaylists_Click"/>
-            <Button x:Name="btnHelp" Content="    Help" Width="120" Height="48" FontSize="15" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Background="#FFEFF0F4" BorderBrush="{x:Null}" Style="{DynamicResource ButtonStyle1}" HorizontalContentAlignment="Left" Margin="90,626,90,10"/>
-            <Button x:Name="btnSettings" Content="    Settings" Width="120" Height="48" FontSize="15" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Background="#FFEFF0F4" BorderBrush="{x:Null}" Style="{DynamicResource ButtonStyle1}" HorizontalContentAlignment="Left" Margin="90,578,90,58"/>
+            <Image Height="130" Width="130" Source="/Icon/icons8-musical-96.png" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,33,0,0"/>
+            <TextBlock TextWrapping="Wrap" Text="MusicPlayer byWeed" FontSize="25" FontFamily="Bradley Hand ITC" FontWeight="Bold" Margin="26,155,26,482" Width="235" Height="40"/>
+            <TextBlock Height="30" TextWrapping="Wrap" Text="Premium" Width="100" Background="#FFB422DF" Foreground="White" FontFamily="Arial" FontWeight="Bold" Padding="23,7,0,0" Margin="100,210,100,463"/>
+            <Button x:Name="btnPlaying" Content="  Now playing" Width="155" Height="48" FontSize="15" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Background="#FFEFF0F4" BorderBrush="{x:Null}" Style="{DynamicResource ButtonStyle1}" HorizontalContentAlignment="Left" Margin="95,278,50,374" Click="btnPlaying_Click"/>
+            <Button x:Name="btnExplore" Content="  Explore" Width="155" Height="48" FontSize="15" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Background="#FFEFF0F4" BorderBrush="{x:Null}" Style="{DynamicResource ButtonStyle1}" HorizontalContentAlignment="Left" Margin="95,331,50,321" Click="btnExplore_Click"/>
+            <Button x:Name="btnRawDataPCM" Content="  Raw Data (PCM)" Width="155" Height="48" FontSize="15" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Background="#FFEFF0F4" BorderBrush="{x:Null}" Style="{DynamicResource ButtonStyle1}" HorizontalContentAlignment="Left" Margin="95,384,50,268" Click="btnRawDataPCM_Click"/>
+            <Button x:Name="btnFFT" Content="  FrequencyData (FFT)" Width="155" Height="48" FontSize="15" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Background="#FFEFF0F4" BorderBrush="{x:Null}" Style="{DynamicResource ButtonStyle1}" HorizontalContentAlignment="Left" Margin="95,437,50,215" Click="btnFFT_Click"/>
+            <Button x:Name="btnHelp" Content="    Help" Width="155" Height="48" FontSize="15" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Background="#FFEFF0F4" BorderBrush="{x:Null}" Style="{DynamicResource ButtonStyle1}" HorizontalContentAlignment="Left" Margin="95,626,50,10"/>
+            <Button x:Name="btnSettings" Content="    Settings" Width="155" Height="48" FontSize="15" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Background="#FFEFF0F4" BorderBrush="{x:Null}" Style="{DynamicResource ButtonStyle1}" HorizontalContentAlignment="Left" Margin="95,578,50,58"/>
             <Rectangle x:Name="shape" HorizontalAlignment="Left" Height="159" Margin="83,302,0,0" Stroke="#FF484C59" VerticalAlignment="Top" Width="2" Fill="#FF484C59"/>
             <Ellipse x:Name="indicator" HorizontalAlignment="Left" Height="14" Margin="77,295,0,0" Stroke="#FFB422DF" VerticalAlignment="Top" Width="14" Fill="#FFEFF0F4" StrokeThickness="3"/>
 
@@ -173,7 +173,18 @@
                         </Button>
                     </Grid>
                 </TabItem>
-
+                <TabItem Header="tabPCM">
+                    <Grid Background="#FFF7F8FA" Width="894">
+                        <WpfPlot x:Name="plotPCM" Width="800" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <TextBlock x:Name="tbPCM" Margin="117,79,117,565" TextWrapping="Wrap" Text="Raw Data (PCM)" FontSize="20" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Height="30" Width="660" Background="White"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="tabFFT">
+                    <Grid Background="#FFF7F8FA" Width="894">
+                        <WpfPlot x:Name="plotFFT" Width="800" Height="500" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                        <TextBlock x:Name="tbFFT" Margin="117,79,117,565" TextWrapping="Wrap" Text="Frequency Data (FFT)" FontSize="20" Foreground="#FF484C59" FontWeight="SemiBold" FontStretch="Normal" Height="30" Width="660" Background="White"/>
+                    </Grid>
+                </TabItem>
             </TabControl>
             <Grid x:Name="titleBar" Width="900" Background="#FFF7F8FA" Margin="0,0,0,645" Height="55">
                 <Button Style="{DynamicResource ButtonExit}" x:Name="btnExit" Content="" HorizontalAlignment="Left" Margin="850,5,0,0" VerticalAlignment="Top" BorderBrush="{x:Null}" Width="40" Height="41" Click="btnExit_Click">
@@ -181,7 +192,7 @@
                         <ImageBrush ImageSource="/Icon/exit.jpg" Stretch="Uniform"/>
                     </Button.Background>
                 </Button>
-                <TextBlock x:Name="SongTitleHeader" HorizontalAlignment="Left" Margin="26,14,0,0" TextWrapping="Wrap" Text="Song Title - Playing" VerticalAlignment="Top" Width="800" FontSize="30" FontFamily="Bradley Hand ITC" FontWeight="UltraBold" TextTrimming="WordEllipsis"/>
+                <TextBlock x:Name="SongTitleHeader" HorizontalAlignment="Left" Margin="26,14,0,0" TextWrapping="Wrap" Text="Song Title - Playing" VerticalAlignment="Top" Width="800" FontSize="30" FontFamily="iCiel Panton Light Italic" FontWeight="ExtraBold" TextTrimming="WordEllipsis"/>
             </Grid>
 
             <MediaElement x:Name="mePlayer" Height="60" Width="900" Margin="0,641,0,0" LoadedBehavior="Manual" Stretch="None" MediaOpened="mePlayer_MediaOpened"/>
