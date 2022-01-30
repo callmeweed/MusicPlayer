@@ -42,12 +42,11 @@ namespace MusicPlayer
         //Tab PCM va FFT
         DispatcherTimer timer2 = new DispatcherTimer();
         private int RATE = 44100; // sample rate
+        byte[] frames;
         int frameSize = 0;
         long tmpBuffer = 0;
-        long bufSize = (long)Math.Pow(2, 13);
+        long bufferSize = (long)Math.Pow(2, 13);
 
-        byte[] frames;
-        
         public void ReadFileAudio(string url)
         {
             tmpBuffer = 0;
@@ -85,40 +84,28 @@ namespace MusicPlayer
             int SAMPLE_RESOLUTION = 16;
 
             int BYTE_PER_POINT = SAMPLE_RESOLUTION / 8;
-            Int32[] vals = new Int32[bufSize / BYTE_PER_POINT];
-            double[] Ys = new double[bufSize / BYTE_PER_POINT];
-            double[] Xs = new double[bufSize / BYTE_PER_POINT];
-            double[] Ys2 = new double[bufSize / BYTE_PER_POINT];
-            double[] Xs2 = new double[bufSize / BYTE_PER_POINT];
+            Int32[] vals = new Int32[bufferSize / BYTE_PER_POINT];
+            double[] Ys = new double[bufferSize / BYTE_PER_POINT];
+            double[] Xs = new double[bufferSize / BYTE_PER_POINT];
+            double[] Ys2 = new double[bufferSize / BYTE_PER_POINT];
+            double[] Xs2 = new double[bufferSize / BYTE_PER_POINT];
             for (int i = 0; i < vals.Length; i++)
             {
-
                 //bit shift the byte buffer into the right variable format
-
                 byte hByte = frames[i * 2 + 1 + tmpBuffer];
-
                 byte lByte = frames[i * 2 + 0 + tmpBuffer];
-
                 //Console.Out.WriteLine("i: {2};  Hbyte:{0};    Lbyte:{1} ", hByte, lByte, i);
-
                 vals[i] = (int)(short)((hByte << 8) | lByte);
-
                 Xs[i] = i;
-
                 Ys[i] = vals[i];
-
                 Xs2[i] = (double)i / Ys.Length * RATE / 1000.0; // units are in kHz
-
             }
-
-
-            //plot1
+            //plot PCM
             plotPCM.Plot.SetAxisLimits(0, 2000, -60000, 60000);
             plotPCM.Plot.AddScatterLines(Xs, Ys, color: System.Drawing.Color.Purple);
             plotPCM.Refresh();
-
             Ys2 = FFT(Ys);
-            //plot2
+            //plot FFT
             plotFFT.Plot.SetAxisLimits(-2, 25, -50, 3000);
             plotFFT.Plot.AddScatterLines(Xs2.Take(Xs2.Length / 2).ToArray(), Ys2.Take(Ys2.Length / 2).ToArray(), color: System.Drawing.Color.Purple);
             plotFFT.Refresh();
@@ -134,7 +121,7 @@ namespace MusicPlayer
             public string Duration { get; set; }
 
         }
-        //Tao mang luu file va duong dan
+        //Tao list luu file va duong dan
         //Tao list luu paths, files;
         List<String> paths = new List<String>();
         List<String> files = new List<String>();
@@ -309,12 +296,12 @@ namespace MusicPlayer
 
         private void Timer2_Tick(object sender, EventArgs e)
         {
-            if (tmp + bufSize <= frameSize)
+            if (tmp + bufferSize <= frameSize)
             {
                 UpdateAudioGraph();
                 plotPCM.Plot.Clear();
                 plotFFT.Plot.Clear();
-                tmpBuffer += bufSize;
+                tmpBuffer += bufferSize;
             }
             else
             {
