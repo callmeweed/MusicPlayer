@@ -15,6 +15,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using NAudio.Wave;
+
 
 namespace MusicPlayer
 {
@@ -27,12 +29,101 @@ namespace MusicPlayer
         {
             InitializeComponent();
             DispatcherTimer timer = new DispatcherTimer();
+            
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Tick += timer_Tick;
             timer.Start();
             slVolume.Value = mePlayer.Volume;
+
+            timer2.Interval = TimeSpan.FromMilliseconds(0.1);
+            timer2.Tick += Timer2_Tick;
+            timer2.IsEnabled = false;
+        }
+        //Tab PCM va FFT
+        DispatcherTimer timer2 = new DispatcherTimer();
+        private int RATE = 44100; // sample rate
+        int frameSize = 0;
+        long tmpBuffer = 0;
+        long bufSize = (long)Math.Pow(2, 13);
+
+        byte[] frames;
+        
+        public void ReadFileAudio(string url)
+        {
+            tmpBuffer = 0;
+            plotPCM.Plot.Clear();
+            plotFFT.Plot.Clear();
+            AudioFileReader afr = new AudioFileReader(url);
+            // read the bytes from the stream
+            frameSize = (int)afr.Length;
+            frames = new byte[frameSize];
+            afr.Read(frames, 0, frameSize);
+            timer2.IsEnabled = true;
         }
 
+        public double[] FFT(double[] data)
+        {
+            double[] fft = new double[data.Length];
+            System.Numerics.Complex[] fftComplex = new System.Numerics.Complex[data.Length];
+            for (int i = 0; i < data.Length; i++)
+            {
+                fftComplex[i] = new System.Numerics.Complex(data[i], 0.0);
+            }
+            Accord.Math.FourierTransform.FFT(fftComplex, Accord.Math.FourierTransform.Direction.Forward);
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                fft[i] = fftComplex[i].Magnitude;
+            }
+
+            return fft;
+        }
+
+        public void UpdateAudioGraph()
+        {
+
+            int SAMPLE_RESOLUTION = 16;
+
+            int BYTE_PER_POINT = SAMPLE_RESOLUTION / 8;
+            Int32[] vals = new Int32[bufSize / BYTE_PER_POINT];
+            double[] Ys = new double[bufSize / BYTE_PER_POINT];
+            double[] Xs = new double[bufSize / BYTE_PER_POINT];
+            double[] Ys2 = new double[bufSize / BYTE_PER_POINT];
+            double[] Xs2 = new double[bufSize / BYTE_PER_POINT];
+            for (int i = 0; i < vals.Length; i++)
+            {
+
+                //bit shift the byte buffer into the right variable format
+
+                byte hByte = frames[i * 2 + 1 + tmpBuffer];
+
+                byte lByte = frames[i * 2 + 0 + tmpBuffer];
+
+                //Console.Out.WriteLine("i: {2};  Hbyte:{0};    Lbyte:{1} ", hByte, lByte, i);
+
+                vals[i] = (int)(short)((hByte << 8) | lByte);
+
+                Xs[i] = i;
+
+                Ys[i] = vals[i];
+
+                Xs2[i] = (double)i / Ys.Length * RATE / 1000.0; // units are in kHz
+
+            }
+
+
+            //plot1
+            plotPCM.Plot.SetAxisLimits(0, 2000, -60000, 60000);
+            plotPCM.Plot.AddScatterLines(Xs, Ys, color: System.Drawing.Color.Purple);
+            plotPCM.Refresh();
+
+            Ys2 = FFT(Ys);
+            //plot2
+            plotFFT.Plot.SetAxisLimits(-2, 25, -50, 3000);
+            plotFFT.Plot.AddScatterLines(Xs2.Take(Xs2.Length / 2).ToArray(), Ys2.Take(Ys2.Length / 2).ToArray(), color: System.Drawing.Color.Purple);
+            plotFFT.Refresh();
+        }
+        //--------------------------------------------------------------------------------------------------------------------------------
 
         //Tab Explore
         public class Songs
@@ -47,6 +138,7 @@ namespace MusicPlayer
         //Tao list luu paths, files;
         List<String> paths = new List<String>();
         List<String> files = new List<String>();
+        List<String> duration = new List<String>();
         //Tao list luu bai hat add vao datagrid
         List<Songs> songs = new List<Songs>();
         int tmp = 0;
@@ -59,7 +151,21 @@ namespace MusicPlayer
             if (ofd.ShowDialog() == true)
             {
                 files.AddRange(ofd.SafeFileNames);
-                paths.AddRange(ofd.FileNames);       
+                paths.AddRange(ofd.FileNames);
+                for (int i = 0; i < files.Count(); i++)
+                {
+                    AudioFileReader wfr = new AudioFileReader(paths[i]);
+                    TimeSpan ts = wfr.TotalTime;
+                    if(ts.Hours != 0)
+                    {
+                        duration.Add(ts.Hours.ToString() + ":" + ts.Minutes.ToString() + ":" + ts.Seconds.ToString());
+                    } 
+                    else
+                    {
+                        duration.Add(ts.Minutes.ToString() + ":" + ts.Seconds.ToString());
+                    }
+                }
+                    
                 for (int i = tmp; i < files.Count(); i++)
                 {
                     tmp++;
@@ -68,7 +174,7 @@ namespace MusicPlayer
                         Song = files[i],
                         Genre = "Unknow",
                         Author = "Sơn tùng MTP",
-                        Duration = "00:00"
+                        Duration = duration[i]
                     });
                     dgList.Items.Add(songs[i]);
                 }
@@ -77,7 +183,7 @@ namespace MusicPlayer
             }
             
         }
-
+        
         private void dgList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             mePlayer.Source = new Uri(paths[dgList.SelectedIndex]);
@@ -87,6 +193,7 @@ namespace MusicPlayer
         {
             SongTitleHeader.Text = files[dgList.SelectedIndex];
             tbTitle.Text = files[dgList.SelectedIndex];
+            ReadFileAudio(paths[dgList.SelectedIndex]);
         }
         //--------------------------------------------------------------------------------------------------------------------------------
 
@@ -102,7 +209,7 @@ namespace MusicPlayer
             margin.Top = btnPlaying.Margin.Top + 17;
             indicator.Margin = margin;
             tbControl.SelectedIndex = 0;
-
+            
         }
 
         private void btnExplore_Click(object sender, RoutedEventArgs e)
@@ -114,19 +221,21 @@ namespace MusicPlayer
 
         }
 
-        private void btnAlbums_Click(object sender, RoutedEventArgs e)
+        private void btnRawDataPCM_Click(object sender, RoutedEventArgs e)
         {
             Thickness margin = indicator.Margin;
-            margin.Top = btnAlbums.Margin.Top + 17;
+            margin.Top = btnRawDataPCM.Margin.Top + 17;
             indicator.Margin = margin;
+            tbControl.SelectedIndex = 2;
+        }
+        private void btnFFT_Click(object sender, RoutedEventArgs e)
+        {
+            Thickness margin = indicator.Margin;
+            margin.Top = btnFFT.Margin.Top + 17;
+            indicator.Margin = margin;
+            tbControl.SelectedIndex = 3;
         }
 
-        private void btnPlaylists_Click(object sender, RoutedEventArgs e)
-        {
-            Thickness margin = indicator.Margin;
-            margin.Top = btnPlaylists.Margin.Top + 17;
-            indicator.Margin = margin;
-        }
         //--------------------------------------------------------------------------------------------------------------------------------
 
         // Button Previous, Play, Pause, Stop, Next
@@ -139,18 +248,24 @@ namespace MusicPlayer
             else if(dgList.SelectedIndex > 0)
             {
                 dgList.SelectedIndex -= 1;
-            }    
-        }
-
-        private void btnPlay_Click(object sender, RoutedEventArgs e)
-        {
+            }
+            ReadFileAudio(paths[dgList.SelectedIndex]);
             mePlayer.Play();
             btnPlay.Visibility = Visibility.Hidden;
             btnPause.Visibility = Visibility.Visible;
         }
 
+        private void btnPlay_Click(object sender, RoutedEventArgs e)
+        {
+            timer2.IsEnabled = true;
+            mePlayer.Play();
+            btnPlay.Visibility = Visibility.Hidden;
+            btnPause.Visibility = Visibility.Visible; 
+        }
+
         private void btnPause_Click(object sender, RoutedEventArgs e)
         {
+            timer2.IsEnabled = false;
             mePlayer.Pause();
             btnPlay.Visibility = Visibility.Visible;
             btnPause.Visibility = Visibility.Hidden;
@@ -160,6 +275,9 @@ namespace MusicPlayer
             mePlayer.Stop();
             btnPlay.Visibility = Visibility.Visible;
             btnPause.Visibility = Visibility.Hidden;
+            ReadFileAudio(paths[dgList.SelectedIndex]);
+            UpdateAudioGraph();
+            timer2.IsEnabled = false;
         }
         private void btnNext_Click(object sender, RoutedEventArgs e)
         {
@@ -171,7 +289,10 @@ namespace MusicPlayer
             {
                 dgList.SelectedIndex += 1;
             }
-            
+            ReadFileAudio(paths[dgList.SelectedIndex]);
+            mePlayer.Play();
+            btnPlay.Visibility = Visibility.Hidden;
+            btnPause.Visibility = Visibility.Visible;
         }
         //--------------------------------------------------------------------------------------------------------------------------------
 
@@ -185,7 +306,27 @@ namespace MusicPlayer
                 slTimeLine.Value = mePlayer.Position.TotalSeconds;
             }
         }
-        
+
+        private void Timer2_Tick(object sender, EventArgs e)
+        {
+            if (tmp + bufSize <= frameSize)
+            {
+                UpdateAudioGraph();
+                plotPCM.Plot.Clear();
+                plotFFT.Plot.Clear();
+                tmpBuffer += bufSize;
+            }
+            else
+            {
+                plotPCM.Plot.Clear();
+                plotFFT.Plot.Clear();
+                plotPCM.Refresh();
+                plotFFT.Refresh();
+                timer2.IsEnabled = false;
+            }
+
+        }
+
         private void slTimeLine_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             tbStatus.Text = TimeSpan.FromSeconds(slTimeLine.Maximum - slTimeLine.Value).ToString(@"hh\:mm\:ss");
@@ -218,6 +359,8 @@ namespace MusicPlayer
             mePlayer.Volume = 0;
             slVolume.Value = mePlayer.Volume;
         }
+
+       
 
         //--------------------------------------------------------------------------------------------------------------------------------
     }

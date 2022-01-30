@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("Music Player")]
 [assembly: AssemblyDescription("Music Player")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("IT1-02 K64 HUST")]
 [assembly: AssemblyProduct("Music Player")]
 [assembly: AssemblyCopyright("Copyright HieuNT194050 ©  2022")]
 [assembly: AssemblyTrademark("")]
